@@ -1,6 +1,9 @@
-require "taco_deli/version"
 
-module TacoDeli
-  class Error < StandardError; end
-  # Your code goes here...
-end
+require 'open-uri'
+require 'nokogiri'
+require 'pry'
+require 'date'
+
+require_relative './taco_deli/version'
+require_relative './taco_deli/cli'
+require_relative './taco_deli/scraper'
