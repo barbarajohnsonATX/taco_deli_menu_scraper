@@ -1,64 +1,128 @@
-require_relative './scraper'
-
 class TacoDeli::CLI
 
   def call
-    puts "Welcome to Taco Deli's Menu"
+    system "clear"
     @input = nil
     list_menu
-
   end
 
   def list_menu
+    refresh_screen
+
     while @input != "exit"
 
-      puts "┈┈┈┈╭╯╭╯╭╯┈┈┈┈┈"
-      puts "┈┈┈╱▔▔▔▔▔╲▔╲┈┈┈"
-      puts "┈┈╱┈╭╮┈╭╮┈╲╮╲┈┈"
-      puts "┈┈▏┈▂▂▂▂▂┈▕╮▕┈┈"
-      puts "┈┈▏┈╲▂▂▂╱┈▕╮▕┈┈"
-      puts "┈┈╲▂▂▂▂▂▂▂▂╲╱┈┈"
+      #print main menu based on scraped categories (based on 'id')
+      categories = TacoDeli::Meal.find_categories
+      print_main_menu(categories)
+      input = gets.strip.downcase
 
-      puts "Select a number to display the menu or type 'exit':"
-      puts "1. Breakfast"
-      puts "2. Lunch"
-      puts "3. Sides"
-      puts "4. Specials"
-      puts "5. Drinks"
-      puts "6. #{Date.today.strftime("%A")}'s Special"
+      #scrape menu items for selected category
+      if input.to_i.between?(1, categories.length-1)
+        @menu_array = TacoDeli::Scrape.scrape(categories[input.to_i-1])
 
-      @input = gets.strip
+      #check if last option is selected, then scrape the daily special
+      elsif input.to_i == categories.length
+        @menu_array = TacoDeli::Scrape.scrape_daily_special(today)
 
-      if @input == "1"
-        @menu_array = TacoDeli::Scrape.scraper("breakfast")
-      elsif @input == "2"
-        @menu_array = TacoDeli::Scrape.scraper("lunch")
-      elsif @input == "3"
-        @menu_array = TacoDeli::Scrape.scraper("sides")
-      elsif @input == "4"
-        @menu_array = TacoDeli::Scrape.scraper("specials")
-      elsif @input == "5"
-        @menu_array = TacoDeli::Scrape.scraper("drinks")
-      elsif @input == "6"
-        @menu_array = TacoDeli::Scrape.scraper("daily")
-      elsif @input.downcase == "exit"
-        puts "Goodbye"
+      elsif input == "exit"
+        goodbye
         break
+
       else
-        puts "Invalid choice. Try again."
+        invalid
         list_menu
       end
 
-      print_menu
+      if TacoDeli::Meal.has_subcategories?(@menu_array)
+        print_subcategory_menu(@menu_array)
+      else
+        print_selected_menu(@menu_array)
+      end
+    end #end of while loop
+  end
+
+
+
+  def refresh_screen
+    system "clear"
+    puts "\t\tWelcome to Taco Deli's Menu"
+  end
+
+  def print_banner
+    puts "\t\t┈┈┈┈╭╯╭╯╭╯┈┈┈┈┈"
+    puts "\t\t┈┈┈╱▔▔▔▔▔╲▔╲┈┈┈"
+    puts "\t\t┈┈╱┈╭╮┈╭╮┈╲╮╲┈┈"
+    puts "\t\t┈┈▏┈▂▂▂▂▂┈▕╮▕┈┈"
+    puts "\t\t┈┈▏┈╲▂▂▂╱┈▕╮▕┈┈"
+    puts "\t\t┈┈╲▂▂▂▂▂▂▂▂╲╱┈┈"
+    puts ""
+  end
+
+  def print_main_menu(items)
+    #find main categories: breakfast, lunch, sides, etc.
+    print_banner
+
+    #create options list based on categories found
+    list_main_menu_options(items)
+  end
+
+  def list_main_menu_options(items)
+    puts "\t\tSelect a number to display the menu or type 'exit':"
+
+    items[0..-2].each_with_index do |item, index|
+      puts "\t\t#{index+1}. #{item.downcase}"
+    end
+
+    #last item is daily special based on today's day
+    puts "\t\t#{items.length}. daily special: #{today}"
+  end
+
+  def today
+    Date.today.strftime("%A").downcase
+  end
+
+  def invalid
+    puts "\t\tInvalid choice. Try again."
+  end
+
+  def goodbye
+    puts "\t\tGoodbye"
+  end
+
+  def print_subcategory_menu(items)
+    subcategories = TacoDeli::Meal.find_subcategories(items)
+
+    if subcategories.length > 1
+      puts "\t\tSelect from the subcategory or type 'back' to return to the main menu:"
+      print_options(subcategories)
+
+      input = gets.strip
+      if input.downcase == "back"
+        list_menu
+      elsif !input.to_i.between?(1, subcategories.length)
+        invalid
+        print_subcategory_menu(items)
+      else
+        list = TacoDeli::Meal.find_by_subcategory(items, subcategories[input.to_i-1])
+        print_selected_menu(list)
+      end
+
+    else
+      print_selected_menu(items)
     end
   end
 
-  def print_menu
-    @menu_array.each_with_index do |item, index|
+  def print_options(items)
+    items.each_with_index do |item, index|
+      puts "\t\t#{index+1}. #{item.downcase}"
+    end
+  end
+
+  def print_selected_menu(items)
+    puts "\t#{items.first[:subcat]} Menu"
+    items.each_with_index do |item, index|
       puts "\t#{index+1}. #{item[:name]}"
       puts "\t#{item[:description]}\n\n"
     end
   end
-
-
 end
