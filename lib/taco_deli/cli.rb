@@ -3,12 +3,11 @@ class TacoDeli::CLI
   def call
     system "clear"
     @input = nil
+    refresh_screen
     list_menu
   end
 
   def list_menu
-    refresh_screen
-
     while @input != "exit"
 
       #print main menu based on scraped categories (based on 'id')
@@ -33,14 +32,12 @@ class TacoDeli::CLI
         list_menu
       end
 
-      if TacoDeli::Meal.has_subcategories?(@menu_array)
-        print_subcategory_menu(@menu_array)
-      else
-        print_selected_menu(@menu_array)
-      end
+      (TacoDeli::Meal.has_subcategories?(@menu_array) ?
+          print_subcategory_menu(@menu_array) :
+          print_selected_menu(@menu_array))
+
     end #end of while loop
   end
-
 
 
   def refresh_screen
@@ -90,27 +87,29 @@ class TacoDeli::CLI
   end
 
   def print_subcategory_menu(items)
-    subcategories = TacoDeli::Meal.find_subcategories(items)
+    @input = nil
 
+    subcategories = TacoDeli::Meal.find_subcategories(items)
     if subcategories.length > 1
       puts "\t\tSelect from the subcategory or type 'back' to return to the main menu:"
       print_options(subcategories)
 
-      input = gets.strip
-      if input.downcase == "back"
+      @input = gets.strip
+      if @input.downcase == "back"
         list_menu
-      elsif !input.to_i.between?(1, subcategories.length)
+      elsif !@input.to_i.between?(1, subcategories.length)
         invalid
         print_subcategory_menu(items)
       else
-        list = TacoDeli::Meal.find_by_subcategory(items, subcategories[input.to_i-1])
+        list = TacoDeli::Meal.find_by_subcategory(items, subcategories[@input.to_i-1])
         print_selected_menu(list)
       end
 
     else
       print_selected_menu(items)
     end
-  end
+
+   end
 
   def print_options(items)
     items.each_with_index do |item, index|
@@ -125,4 +124,5 @@ class TacoDeli::CLI
       puts "\t#{item[:description]}\n\n"
     end
   end
+
 end
