@@ -9,32 +9,21 @@ class TacoDeli::Scrape
 			categories.uniq.compact
 	end
 
-	def self.scrape_daily_special(day)
+
+	def self.scrape
 		list = Nokogiri::HTML(open("https://www.tacodeli.com/menu/"))
-		menu_items = []
+    self.scrape_categories.each do |category|
 
-		list.search("h3.day-title.#{day}")[0].parent.css("li").each do |item|
-			item_hash = {
-				:subcat => item.parent.parent.css("h3").text.strip,
-				:name => item.css("h4").text.strip,
-				:description => item.css("p").text.strip }
-				menu_items << item_hash
-			end
-			menu_items
- 	end
-
-
-	def self.scrape(category)
-		list = Nokogiri::HTML(open("https://www.tacodeli.com/menu/"))
-		menu_items = []
  		list.css("##{category} ul.menu-items li.menu-item").each do |item|
-			item_hash = {
-				:subcat => item.parent.parent.css("h3").text.strip,
-				:name => item.css("h4").text.strip,
-				:description => item.css("p").text.strip }
-				menu_items << item_hash
-			end
-			menu_items
- 		end
+        cat = category
+				subcat = item.parent.parent.css("h3").text.strip
+				name = item.css("h4").text.strip
+				description = item.css("p").text.strip
+				TacoDeli::Menu.new(cat, subcat, name, description)
+ 			end
 
-end
+ 		end
+  end
+
+
+ end
