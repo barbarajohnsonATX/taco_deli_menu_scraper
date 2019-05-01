@@ -19,70 +19,38 @@ class TacoDeli::Menu
     @@all << self
   end
 
+  #generte a list of all categories (breakfast, lunch, ...)
   def self.find_categories
-    categories = @@all.collect { |item| item.category }
+    categories = self.all.collect { |item| item.category }
     categories.uniq
   end
 
-  def self.categories_menu
-    categories = self.find_categories.each_with_index do |item, index|
-      puts "#{index+1}. #{item}"
-    end
-    categories
-  end
-
-  def self.list_subcategories_menu(subcat)
-     subcat.each_with_index do |item, index|
-      puts "#{index+1}. #{item}"
-    end
-  end
-
-  def self.print_subcategories_of(cat)
+  #generate a list of a category's subcategories (lunch: chicken, beef, etc)
+  def self.find_subcategories(cat)
     list = []
-    @@all.select do |item|
+    self.all.select do |item|
       if item.category == cat && item.subcategory != ""
         list << item.subcategory
       end
     end
-     self.list_subcategories_menu(list.uniq)
-     list.uniq
+    list.uniq
   end
 
-  def self.print_items_by_category(cat)
-    list = self.list_by_category(cat)
-    self.print_items(list)
-  end
-
+  #generate list of items from a category
   def self.list_by_category(cat)
-    list = @@all.select { |item| item.category == cat }
+    list = self.all.select { |item| item.category == cat }
   end
 
-  def self.print_items(list)
-    list.each_with_index do |item, index|
-      puts "#{index+1}. #{item.category} : #{item.subcategory} #{item.name}"
-      puts "#{item.description}"
-      puts ""
-    end
-  end
-
+  #generate list of itmes from a subcategory
   def self.list_by_subcategory(subcat)
-    list = @@all.select { |item| item.subcategory == subcat }
+    list = self.all.select { |item| item.subcategory == subcat }
   end
 
-  def self.print_items_by_subcategory(subcat)
-    results = self.list_by_subcategory(subcat)
-    self.print_items(results)
-  end
-
+ #check if a category has a subcategory 
   def self.category_has_subcategories?(cat)
-    returnval = nil
-    test = @@all.select { |item| item.category == cat }
-     if test.first.subcategory == nil || test.first.subcategory == ""
-       returnval = false
-    else
-      returnval = true
-    end
-     return returnval
+    test = self.all.select { |item| item.category == cat }
+    (test.first.subcategory == "" ? returnval = false : returnval = true)
+    return returnval
   end
 
 end

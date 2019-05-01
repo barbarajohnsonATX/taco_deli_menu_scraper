@@ -2,7 +2,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'pry'
-require 'date'
+require 'colorize'
 
 require_relative './taco_deli/version'
 require_relative './taco_deli/cli'
