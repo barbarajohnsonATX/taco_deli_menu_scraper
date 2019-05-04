@@ -2,6 +2,7 @@ class TacoDeli::CLI
 
   def call
     system "clear"
+    puts "Welcome to Taco Deli! You must be hungry!"
     TacoDeli::Scrape.scrape
     start
   end
@@ -40,7 +41,7 @@ class TacoDeli::CLI
 
 
   def print_banner
-    puts "You hungry? Which menu would you like to see?".blue
+    puts "Which menu would you like to see?".blue
     puts "Enter the number or type 'exit.'".blue
     puts ""
     puts "\t\t┈┈┈┈╭╯╭╯╭╯┈┈┈┈┈".red
