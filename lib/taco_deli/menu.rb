@@ -21,8 +21,7 @@ class TacoDeli::Menu
 
   #generte a list of all categories (breakfast, lunch, ...)
   def self.find_categories
-    categories = self.all.collect { |item| item.category }
-    categories.uniq
+    self.all.collect { |item| item.category }.uniq
   end
 
   #generate a list of a category's subcategories (lunch: chicken, beef, etc)
@@ -37,16 +36,16 @@ class TacoDeli::Menu
   end
 
   #generate list of items from a category
-  def self.list_by_category(cat)
+  def self.find_by_category(cat)
     list = self.all.select { |item| item.category == cat }
   end
 
   #generate list of itmes from a subcategory
-  def self.list_by_subcategory(subcat)
+  def self.find_by_subcategory(subcat)
     list = self.all.select { |item| item.subcategory == subcat }
   end
 
- #check if a category has a subcategory 
+ #check if a category has a subcategory
   def self.category_has_subcategories?(cat)
     test = self.all.select { |item| item.category == cat }
     (test.first.subcategory == "" ? returnval = false : returnval = true)

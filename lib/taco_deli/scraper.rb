@@ -3,7 +3,7 @@ class TacoDeli::Scrape
   def self.scrape
     list = Nokogiri::HTML(open("https://www.tacodeli.com/menu/"))
 
-    list.css("ul.menu-items li.menu-item").each_with_index do |item, index|
+    list.css("ul.menu-items li.menu-item").each do |item|
       category = item.parent.parent.parent.parent.parent.parent[:id]
       subcat = item.parent.parent.css("h3").text.strip
       name = item.css("h4").text.strip
