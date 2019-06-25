@@ -1,22 +1,5 @@
 # TacoDeli
 
-Welcome to to the Taco Deli gem. This gem will show you menu items: breakfast, lunch, sides, etc. 
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'taco_deli'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install taco_deli
 
 ## Usage
 
