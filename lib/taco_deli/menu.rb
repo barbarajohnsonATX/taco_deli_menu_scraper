@@ -26,13 +26,21 @@ class TacoDeli::Menu
 
   #generate a list of a category's subcategories (lunch: chicken, beef, etc)
   def self.find_subcategories(cat)
-    list = []
-    self.all.select do |item|
+     self.all.map do |item|
       if item.category == cat && item.subcategory != ""
-        list << item.subcategory
+        item.subcategory
       end
-    end
-    list.uniq
+    end.uniq.compact
+
+
+    # list = []
+    # self.all.select do |item|
+    #   if item.category == cat && item.subcategory != ""
+    #     list << item.subcategory
+    #   end
+    # end
+    # list.uniq
+
   end
 
   #generate list of items from a category

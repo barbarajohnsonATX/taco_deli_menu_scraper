@@ -14,6 +14,7 @@ class TacoDeli::CLI
 
       #Find all categories and list them
       categories = TacoDeli::Menu.find_categories
+
       list_options(categories)
 
       input = gets.strip.downcase
@@ -115,6 +116,8 @@ class TacoDeli::CLI
  #lists subcategory (ex: chicken) items
  def list_subcategory_items(subcat)
     list_items(TacoDeli::Menu.find_by_subcategory(subcat))
+    
+
  end
 
  def list_subcategory_options(cat)
