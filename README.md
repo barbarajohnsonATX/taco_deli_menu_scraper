@@ -3,7 +3,7 @@
 
 ## Usage
 
-Type ./bin/taco_deli_menu at the command line.
+Type `./bin/taco_deli_menu` at the command line.
 
 ## Development
 
